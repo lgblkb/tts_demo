@@ -1,0 +1,89 @@
+x-info-common: &info_common
+  command: python3 app.py
+  shm_size: '10gb'
+  restart: unless-stopped
+
+x-info-1: &info_1
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            device_ids: [ '7' ]
+            capabilities: [ gpu ]
+
+x-info-2: &info_2
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            device_ids: [ '8' ]
+            capabilities: [ gpu ]
+
+services:
+  tts_iseke:
+    <<: *info_common
+    <<: *info_1
+    build:
+      context: .
+      args:
+        BASE_URL: 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
+        MODEL_FILENAME: 'kaztts_male1_tacotron2_train.loss.ave.zip'
+        VOCODER_NAME: 'parallelwavegan_male1_checkpoint'
+    container_name: tts_iseke
+    ports:
+      - "8032:80"
+
+  tts_duman:
+    <<: *info_common
+    <<: *info_1
+    build:
+      context: .
+      args:
+        BASE_URL: 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
+        MODEL_FILENAME: 'kaztts_male2_tacotron2_train.loss.ave.zip'
+        VOCODER_NAME: 'parallelwavegan_male2_checkpoint'
+    container_name: tts_duman
+    ports:
+      - "8033:80"
+
+  tts_raya:
+    <<: *info_common
+    <<: *info_1
+    build:
+      context: .
+      args:
+        BASE_URL: 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
+        MODEL_FILENAME: 'kaztts_female1_tacotron2_train.loss.ave.zip'
+        VOCODER_NAME: 'parallelwavegan_female1_checkpoint'
+    container_name: tts_raya
+    ports:
+      - "8034:80"
+
+  tts_assel:
+    <<: *info_common
+    <<: *info_2
+    build:
+      context: .
+      args:
+        BASE_URL: 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
+        MODEL_FILENAME: 'kaztts_female2_tacotron2_train.loss.ave.zip'
+        VOCODER_NAME: 'parallelwavegan_female2_checkpoint'
+    container_name: tts_assel
+    ports:
+      - "8035:80"
+
+  tts_gulzhanat:
+    <<: *info_common
+    <<: *info_2
+    build:
+      context: .
+      args:
+        BASE_URL: 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
+        MODEL_FILENAME: 'kaztts_female3_tacotron2_train.loss.ave.zip'
+        VOCODER_NAME: 'parallelwavegan_female3_checkpoint'
+    container_name: tts_gulzhanat
+    ports:
+      - "8036:80"
+  

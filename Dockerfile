@@ -28,7 +28,7 @@ RUN echo ". /espnet/tools/anaconda/etc/profile.d/conda.sh" >> ~/.profile &&\
     echo "conda activate espnet" >> ~/.bashrc &&\
     chmod +x /espnet/entrypoint.sh
 
-RUN conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch &&\
+RUN conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch &&\
     cd /espnet/tools && make
 RUN pip install parallel_wavegan flask
 CMD ["python3", "app.py"]

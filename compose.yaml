@@ -1,7 +1,10 @@
 x-info-common: &info_common
-  command: python3 app.py
+  #  command: uwsgi --http 0.0.0.0:8000 --master -p 8 --enable-threads --wsgi-file app.py --callable app
+  #  command: gunicorn --workers 1 --bind 0.0.0.0:8000 wsgi:app
+  command: gunicorn -w 1 -b 0.0.0.0:8000 app:app --access-logfile -
   shm_size: '10gb'
   restart: unless-stopped
+
 
 x-info-1: &info_1
   deploy:
@@ -21,6 +24,33 @@ x-info-2: &info_2
             device_ids: [ '8' ]
             capabilities: [ gpu ]
 
+x-base-url: &base_url 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
+
+x-voice-1: &voice_1
+  BASE_URL: *base_url
+  MODEL_FILENAME: 'kaztts_male1_tacotron2_train.loss.ave.zip'
+  VOCODER_NAME: 'parallelwavegan_male1_checkpoint'
+
+x-voice-2: &voice_2
+  BASE_URL: *base_url
+  MODEL_FILENAME: 'kaztts_male2_tacotron2_train.loss.ave.zip'
+  VOCODER_NAME: 'parallelwavegan_male2_checkpoint'
+
+x-voice-3: &voice_3
+  BASE_URL: *base_url
+  MODEL_FILENAME: 'kaztts_female1_tacotron2_train.loss.ave.zip'
+  VOCODER_NAME: 'parallelwavegan_female1_checkpoint'
+
+x-voice-4: &voice_4
+  BASE_URL: *base_url
+  MODEL_FILENAME: 'kaztts_female2_tacotron2_train.loss.ave.zip'
+  VOCODER_NAME: 'parallelwavegan_female2_checkpoint'
+
+x-voice-5: &voice_5
+  BASE_URL: *base_url
+  MODEL_FILENAME: 'kaztts_female3_tacotron2_train.loss.ave.zip'
+  VOCODER_NAME: 'parallelwavegan_female3_checkpoint'
+
 services:
   tts_iseke:
     <<: *info_common
@@ -28,12 +58,10 @@ services:
     build:
       context: .
       args:
-        BASE_URL: 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
-        MODEL_FILENAME: 'kaztts_male1_tacotron2_train.loss.ave.zip'
-        VOCODER_NAME: 'parallelwavegan_male1_checkpoint'
+        <<: *voice_1
     container_name: tts_iseke
     ports:
-      - "8032:80"
+      - "8032:8000"
 
   tts_duman:
     <<: *info_common
@@ -41,25 +69,21 @@ services:
     build:
       context: .
       args:
-        BASE_URL: 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
-        MODEL_FILENAME: 'kaztts_male2_tacotron2_train.loss.ave.zip'
-        VOCODER_NAME: 'parallelwavegan_male2_checkpoint'
+        <<: *voice_2
     container_name: tts_duman
     ports:
-      - "8033:80"
+      - "8033:8000"
 
   tts_raya:
     <<: *info_common
-    <<: *info_1
+    <<: *info_2
     build:
       context: .
       args:
-        BASE_URL: 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
-        MODEL_FILENAME: 'kaztts_female1_tacotron2_train.loss.ave.zip'
-        VOCODER_NAME: 'parallelwavegan_female1_checkpoint'
+        <<: *voice_3
     container_name: tts_raya
     ports:
-      - "8034:80"
+      - "8034:8000"
 
   tts_assel:
     <<: *info_common
@@ -67,12 +91,10 @@ services:
     build:
       context: .
       args:
-        BASE_URL: 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
-        MODEL_FILENAME: 'kaztts_female2_tacotron2_train.loss.ave.zip'
-        VOCODER_NAME: 'parallelwavegan_female2_checkpoint'
+        <<: *voice_4
     container_name: tts_assel
     ports:
-      - "8035:80"
+      - "8035:8000"
 
   tts_gulzhanat:
     <<: *info_common
@@ -80,10 +102,8 @@ services:
     build:
       context: .
       args:
-        BASE_URL: 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
-        MODEL_FILENAME: 'kaztts_female3_tacotron2_train.loss.ave.zip'
-        VOCODER_NAME: 'parallelwavegan_female3_checkpoint'
+        <<: *voice_5
     container_name: tts_gulzhanat
     ports:
-      - "8036:80"
+      - "8036:8000"
   

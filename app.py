@@ -15,7 +15,7 @@ fs = 22050
 
 # model_name = os.environ['TTS_MODEL_NAME']
 model_dir = Path(os.environ['MODEL_PATH'])
-device = 'cpu'
+device = 'cuda'
 
 
 def ensure_path_exists(path: Path):
@@ -59,7 +59,6 @@ def run_tts(text: str):
         c_mel = text2speech(text.lower())['feat_gen']
         wav = vocoder.inference(c_mel)
 
-    # fd, name = tempfile.mkstemp('.wav')
     fd = io.BytesIO()
 
     ## here all of your synthesized audios will be saved
@@ -68,28 +67,17 @@ def run_tts(text: str):
     # Path(folder_to_save).mkdir(parents=True, exist_ok=True)
 
     write(fd, fs, wav.view(-1).cpu().numpy())
-    # with open(, "rb") as image_file:
     return base64.b64encode(fd.read())
 
 
-web_service = Flask(__name__)
+app = Flask(__name__)
 
 
-@web_service.route('/data', methods=['GET', 'POST'])
+@app.route('/data', methods=['GET', 'POST'])
 def mydata():
     text = request.args.get('sentence').lower()
     return run_tts(text)
 
 
-def main():
-    web_service.run(debug=True, host='0.0.0.0', port=80)
-
-    # sample_text = "Мысалы: интерактивті ақылды көмекшілер, навигациялық жүйелер, ескерту жүйелері және ерекше қажеттіліктері бар адамдарға арналған қолданбалар."
-    # res = run_tts(sample_text)
-    # print(res)
-
-    pass
-
-
-if __name__ == '__main__':
-    main()
+def create_app():
+    return app

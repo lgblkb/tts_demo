@@ -1,4 +1,6 @@
-FROM nvidia/cuda:10.2-devel-ubuntu18.04
+ARG NVIDIA_CUDA_VERSION=10.2
+ARG CUDA_TOOLKIT_VERSION=10.2
+FROM nvidia/cuda:${NVIDIA_CUDA_VERSION}-devel-ubuntu18.04
 
 
 LABEL maintainer = "Dias Bakhtiyarov dbakhtiyarov@nu.edu.kz"
@@ -28,7 +30,7 @@ RUN echo ". /espnet/tools/anaconda/etc/profile.d/conda.sh" >> ~/.profile &&\
     echo "conda activate espnet" >> ~/.bashrc &&\
     chmod +x /espnet/entrypoint.sh
 
-RUN conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch &&\
+RUN conda install pytorch torchvision torchaudio cudatoolkit=${CUDA_TOOLKIT_VERSION} -c pytorch &&\
     cd /espnet/tools && make
 RUN pip install parallel_wavegan flask
 CMD ["python3", "app.py"]
@@ -48,5 +50,5 @@ ENV MODEL_PATH="/espnet/exp/tts_train_raw_char" \
     BASE_URL=$BASE_URL \
     MODEL_FILENAME=$MODEL_FILENAME \
     VOCODER_NAME=$VOCODER_NAME
-
-COPY app.py .
+RUN pip install gunicorn jiwer
+COPY app.py ./

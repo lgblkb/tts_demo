@@ -37,7 +37,7 @@ dm = DotenvMan()
 
 
 def run_cmd(cmd: str):
-    print(f"{cmd=}")
+    print(f"cmd: {cmd}")
     os.system(cmd)
 
 
@@ -69,7 +69,7 @@ def run(ctx: typer.Context, command: str = typer.Option('bash', '--command', '--
         cmd_parts.append(f"-v {v}:{v}")
     # cmd_parts.append('--device /dev/snd')
     if display:
-        os.system('xhost +')
+        # os.system('xhost +')
         cmd_parts.append('--volume="/tmp/.X11-unix:/tmp/.X11-unix:rw"')
         cmd_parts.append('--env="DISPLAY"')
         cmd_parts.append('--env-file ".env"')
@@ -119,7 +119,8 @@ class EnvKeys(str, Enum):
 @app.command()
 def init(storage_folder: Path = typer.Option(Resolve(EnvKeys.STORAGE_FOLDER), '--storage-folder', prompt=True),
          cuda_version: str = typer.Option(Resolve(EnvKeys.CUDA_VERSION_TAG), '--cuda-version', prompt=True)):
-    (storage_folder := storage_folder.resolve()).mkdir(exist_ok=True, parents=True)
+    storage_folder = storage_folder.resolve()
+    storage_folder.mkdir(exist_ok=True, parents=True)
 
     for path in ['.env', '.gitignore', '.dockerignore']:
         Path(path).touch(exist_ok=True)

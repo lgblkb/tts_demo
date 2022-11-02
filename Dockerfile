@@ -51,4 +51,4 @@ ENV MODEL_PATH="/espnet/exp/tts_train_raw_char" \
     MODEL_FILENAME=$MODEL_FILENAME \
     VOCODER_NAME=$VOCODER_NAME
 RUN pip install gunicorn jiwer
-COPY app.py ./
+COPY app app

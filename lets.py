@@ -50,7 +50,6 @@ def build(tag: str = typer.Option(f"{project_folder.name}:latest", '--tag', '-t'
     dm['PROJECT_PATH'] = str(project_folder)
     cmd = f'docker image build ' \
           f'-t {tag} ' \
-          f'--build-arg CUDA_VERSION_TAG={dm[EnvKeys.CUDA_VERSION_TAG]} ' \
           f'--build-arg USER_ID={os.getuid()} ' \
           f'--build-arg GROUP_ID={os.getgid()} ' \
           f'--build-arg USERNAME={getpass.getuser()} ' \
@@ -106,27 +105,20 @@ class Resolve:
             return dm[self.env_key]
 
 
-def resolve_cuda_version():
-    if 'CUDA_VERSION_TAG' in dm.data:
-        return dm['CUDA_VERSION_TAG']
-
-
 class EnvKeys(str, Enum):
     STORAGE_FOLDER = 'STORAGE_FOLDER'
-    CUDA_VERSION_TAG = 'CUDA_VERSION_TAG'
 
 
 @app.command()
-def init(storage_folder: Path = typer.Option(Resolve(EnvKeys.STORAGE_FOLDER), '--storage-folder', prompt=True),
-         cuda_version: str = typer.Option(Resolve(EnvKeys.CUDA_VERSION_TAG), '--cuda-version', prompt=True)):
-    storage_folder = storage_folder.resolve()
-    storage_folder.mkdir(exist_ok=True, parents=True)
+def init(
+):
+    # storage_folder = storage_folder.resolve()
+    # storage_folder.mkdir(exist_ok=True, parents=True)
 
     for path in ['.env', '.gitignore', '.dockerignore']:
         Path(path).touch(exist_ok=True)
 
-    dm[EnvKeys.STORAGE_FOLDER] = str(storage_folder)
-    dm[EnvKeys.CUDA_VERSION_TAG] = cuda_version
+    # dm[EnvKeys.STORAGE_FOLDER] = str(storage_folder)
 
 
 if __name__ == "__main__":

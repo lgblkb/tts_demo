@@ -1,15 +1,13 @@
+import base64
 import io
 import os
-import tempfile
-import time, argparse, sys
+from pathlib import Path
+
 import torch
 from espnet2.bin.tts_inference import Text2Speech
-from parallel_wavegan.utils import download_pretrained_model
-from parallel_wavegan.utils import load_model, read_hdf5
-from scipy.io.wavfile import write
-from pathlib import Path
 from flask import Flask, request
-import base64
+from parallel_wavegan.utils import load_model
+from scipy.io.wavfile import write
 from loguru import logger
 
 fs = 22050

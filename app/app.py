@@ -15,6 +15,7 @@ fs = 22050
 
 # model_name = os.environ['TTS_MODEL_NAME']
 model_dir = Path(os.environ['MODEL_PATH'])
+
 device = 'cuda'
 
 
@@ -37,21 +38,30 @@ vocoder.remove_weight_norm()
 config_file = ensure_path_exists(model_dir / "config.yaml")
 model_path = ensure_path_exists(model_dir / "train.loss.ave_5best.pth")
 
-text2speech = Text2Speech(
-    config_file,
-    model_path,
-    device=device,
-    # Only for Tacotron 2
-    threshold=0.5,
-    minlenratio=0.0,
-    maxlenratio=10.0,
-    use_att_constraint=True,
-    backward_window=1,
-    forward_window=3,
-    # Only for FastSpeech & FastSpeech2
-    speed_control_alpha=1.0,
-)
-text2speech.spc2wav = None  # Disable griffin-lim
+
+def get_text2speech():
+    curdir = os.curdir
+    os.chdir('/espnet')
+    text2speech = Text2Speech(
+        config_file,
+        model_path,
+        device=device,
+        # Only for Tacotron 2
+        threshold=0.5,
+        minlenratio=0.0,
+        maxlenratio=10.0,
+        use_att_constraint=True,
+        backward_window=1,
+        forward_window=3,
+        # Only for FastSpeech & FastSpeech2
+        speed_control_alpha=1.0,
+    )
+    text2speech.spc2wav = None  # Disable griffin-lim
+    os.chdir(curdir)
+    return text2speech
+
+
+text2speech = get_text2speech()
 
 
 def run_tts(text: str):

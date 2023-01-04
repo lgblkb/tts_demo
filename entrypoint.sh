@@ -1,6 +1,17 @@
 #!/bin/bash --login
-set -e
+# The --login ensures the bash configuration is loaded,
+# enabling Conda.
 
-# activate conda environment and let the following process take over
+# Enable strict mode.
+set -euo pipefail
+# ... Run whatever commands ...
+
+# Temporarily disable strict mode and activate conda:
+set +euo pipefail
 conda activate espnet
+
+# Re-enable strict mode:
+set -euo pipefail
+
+# exec the final command:
 exec "$@"

@@ -1,39 +1,26 @@
-ARG NVIDIA_CUDA_VERSION=10.2
-ARG CUDA_TOOLKIT_VERSION=10.2
-FROM nvidia/cuda:${NVIDIA_CUDA_VERSION}-devel-ubuntu18.04
-
+FROM nvidia/cuda:10.2-devel-ubuntu18.04
 
 LABEL maintainer = "Dias Bakhtiyarov dbakhtiyarov@nu.edu.kz"
 
-RUN apt-get update -yqq && apt-get upgrade -y
+RUN apt-get update -yqq && apt-get install -y \
+    git wget curl build-essential
 
-ENV DEBIAN_FRONTEND=noninteractive \
-    PATH=/espnet/tools/anaconda/bin:$PATH
+RUN git clone --depth=1 https://github.com/espnet/espnet
+RUN cd /espnet/tools &&\
+    ./setup_anaconda.sh venv espnet 3.9
 
+RUN cd /espnet/tools &&\
+    make TH_VERSION=1.10.1
+
+ENV PATH="/espnet/tools/venv/bin:$PATH"
+RUN echo "source activate espnet" > ~/.bashrc
+# RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+SHELL ["/bin/bash", "-c"]
+RUN source activate espnet &&\
+    pip install parallel_wavegan==0.5.5 flask gunicorn jiwer
 
 RUN apt-get update -yqq && apt-get install -y \
-    software-properties-common\
-    curl wget fastjar tree git cmake \
-    g++ &&\
-    git clone https://github.com/espnet/espnet &&\
-    cd espnet/tools &&\
-    ./setup_anaconda.sh anaconda espnet 3.9
-
-SHELL ["/bin/bash", "--login", "-c"]
-WORKDIR /espnet
-COPY entrypoint.sh ./
-
-ENTRYPOINT /espnet/entrypoint.sh $0 $@
-RUN echo ". /espnet/tools/anaconda/etc/profile.d/conda.sh" >> ~/.profile &&\
-    conda init bash &&\
-    echo "conda activate espnet" >> ~/.profile &&\
-    echo "conda activate espnet" >> ~/.bashrc &&\
-    chmod +x /espnet/entrypoint.sh
-
-RUN conda install pytorch torchvision torchaudio cudatoolkit=${CUDA_TOOLKIT_VERSION} -c pytorch &&\
-    cd /espnet/tools && make
-RUN pip install parallel_wavegan flask
-CMD ["python3", "app.py"]
+    p7zip-full
 
 ARG BASE_URL
 ARG MODEL_FILENAME
@@ -41,14 +28,18 @@ ARG VOCODER_NAME
 
 RUN cd /espnet &&\
     wget ${BASE_URL}/${MODEL_FILENAME} -O tts_model.zip &&\
-    jar xvf tts_model.zip &&\
+    7z x tts_model.zip &&\
     wget ${BASE_URL}/${VOCODER_NAME}.zip -O tts_vocoder.zip &&\
-    jar xvf tts_vocoder.zip
+    7z x tts_vocoder.zip
 
 ENV MODEL_PATH="/espnet/exp/tts_train_raw_char" \
     VOCODER_PATH="/espnet/${VOCODER_NAME}" \
     BASE_URL=$BASE_URL \
     MODEL_FILENAME=$MODEL_FILENAME \
     VOCODER_NAME=$VOCODER_NAME
-RUN pip install gunicorn jiwer
-COPY app app
+
+COPY ./app /app
+WORKDIR /app
+
+COPY entrypoint.sh ./
+ENTRYPOINT ["./entrypoint.sh"]

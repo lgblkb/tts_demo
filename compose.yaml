@@ -24,12 +24,12 @@ x-info-2: &info_2
             device_ids: [ '${DEVICE_ID_2}' ]
             capabilities: [ gpu ]
 
-x-base-url: &base_url 'https://issai.nu.edu.kz/wp-content/uploads/2022/03'
+x-base-url: &base_url https://issai.nu.edu.kz/wp-content/uploads/2022/03
 
 x-voice-1: &voice_1
   BASE_URL: *base_url
-  MODEL_FILENAME: 'kaztts_male1_tacotron2_train.loss.ave.zip'
-  VOCODER_NAME: 'parallelwavegan_male1_checkpoint'
+  MODEL_FILENAME: kaztts_male1_tacotron2_train.loss.ave.zip
+  VOCODER_NAME: parallelwavegan_male1_checkpoint
 
 x-voice-2: &voice_2
   BASE_URL: *base_url
@@ -62,7 +62,7 @@ services:
     ports:
       - "8032:8000"
 
-  tts_duman:
+  duman:
     <<: *info_common
     <<: *info_1
     build:
@@ -72,7 +72,7 @@ services:
     ports:
       - "8033:8000"
 
-  tts_raya:
+  raya:
     <<: *info_common
     <<: *info_2
     build:
@@ -82,7 +82,7 @@ services:
     ports:
       - "8034:8000"
 
-  tts_assel:
+  assel:
     <<: *info_common
     <<: *info_2
     build:
@@ -92,7 +92,7 @@ services:
     ports:
       - "8035:8000"
 
-  tts_gulzhanat:
+  gulzhanat:
     <<: *info_common
     <<: *info_2
     build:
@@ -101,4 +101,3 @@ services:
         <<: *voice_5
     ports:
       - "8036:8000"
-  

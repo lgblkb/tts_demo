@@ -10,12 +10,12 @@ RUN apt-get update -yqq && apt-get install -y \
 
 ENV PATH="/espnet/tools/venv/bin:$PATH"
 SHELL ["/bin/bash", "-c"]
-COPY entrypoint.sh ./
-ENTRYPOINT ["./entrypoint.sh"]
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
 
 RUN echo "source activate espnet" > ~/.bashrc &&\
     source activate espnet &&\
-    pip install parallel_wavegan==0.5.5 flask gunicorn jiwer loguru \
+    pip install parallel_wavegan==0.5.5 flask gunicorn jiwer loguru
 
 ARG BASE_URL
 ARG MODEL_FILENAME

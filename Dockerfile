@@ -3,24 +3,19 @@ FROM nvidia/cuda:10.2-devel-ubuntu18.04
 LABEL maintainer = "Dias Bakhtiyarov dbakhtiyarov@nu.edu.kz"
 
 RUN apt-get update -yqq && apt-get install -y \
-    git wget curl build-essential
-
-RUN git clone --depth=1 https://github.com/espnet/espnet
-RUN cd /espnet/tools &&\
-    ./setup_anaconda.sh venv espnet 3.9
-
-RUN cd /espnet/tools &&\
+    git wget curl build-essential p7zip-full &&\
+    git clone --depth=1 https://github.com/espnet/espnet &&\
+    cd /espnet/tools && ./setup_anaconda.sh venv espnet 3.9 &&\
     make TH_VERSION=1.10.1
 
 ENV PATH="/espnet/tools/venv/bin:$PATH"
-RUN echo "source activate espnet" > ~/.bashrc
-# RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 SHELL ["/bin/bash", "-c"]
-RUN source activate espnet &&\
-    pip install parallel_wavegan==0.5.5 flask gunicorn jiwer
+COPY entrypoint.sh ./
+ENTRYPOINT ["./entrypoint.sh"]
 
-RUN apt-get update -yqq && apt-get install -y \
-    p7zip-full
+RUN echo "source activate espnet" > ~/.bashrc &&\
+    source activate espnet &&\
+    pip install parallel_wavegan==0.5.5 flask gunicorn jiwer loguru \
 
 ARG BASE_URL
 ARG MODEL_FILENAME
@@ -41,7 +36,4 @@ ENV MODEL_PATH="/espnet/exp/tts_train_raw_char" \
 COPY ./app /app
 WORKDIR /app
 
-COPY entrypoint.sh ./
-ENTRYPOINT ["./entrypoint.sh"]
-RUN source activate espnet &&\
-    pip install loguru
+

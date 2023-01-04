@@ -62,47 +62,43 @@ services:
     ports:
       - "8032:8000"
 
-  #  tts_duman:
-  #    <<: *info_common
-  #    <<: *info_1
-  #    build:
-  #      context: .
-  #      args:
-  #        <<: *voice_2
-  #    container_name: tts_duman
-  #    ports:
-  #      - "8033:8000"
-  #
-  #  tts_raya:
-  #    <<: *info_common
-  #    <<: *info_2
-  #    build:
-  #      context: .
-  #      args:
-  #        <<: *voice_3
-  #    container_name: tts_raya
-  #    ports:
-  #      - "8034:8000"
-  #
-  #  tts_assel:
-  #    <<: *info_common
-  #    <<: *info_2
-  #    build:
-  #      context: .
-  #      args:
-  #        <<: *voice_4
-  #    container_name: tts_assel
-  #    ports:
-  #      - "8035:8000"
-  #
-  #  tts_gulzhanat:
-  #    <<: *info_common
-  #    <<: *info_2
-  #    build:
-  #      context: .
-  #      args:
-  #        <<: *voice_5
-  #    container_name: tts_gulzhanat
-  #    ports:
-  #      - "8036:8000"
+  tts_duman:
+    <<: *info_common
+    <<: *info_1
+    build:
+      context: .
+      args:
+        <<: *voice_2
+    ports:
+      - "8033:8000"
+
+  tts_raya:
+    <<: *info_common
+    <<: *info_2
+    build:
+      context: .
+      args:
+        <<: *voice_3
+    ports:
+      - "8034:8000"
+
+  tts_assel:
+    <<: *info_common
+    <<: *info_2
+    build:
+      context: .
+      args:
+        <<: *voice_4
+    ports:
+      - "8035:8000"
+
+  tts_gulzhanat:
+    <<: *info_common
+    <<: *info_2
+    build:
+      context: .
+      args:
+        <<: *voice_5
+    ports:
+      - "8036:8000"
   

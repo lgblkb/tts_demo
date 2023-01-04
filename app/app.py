@@ -6,9 +6,9 @@ from pathlib import Path
 import torch
 from espnet2.bin.tts_inference import Text2Speech
 from flask import Flask, request
-from loguru import logger
 from parallel_wavegan.utils import load_model
 from scipy.io.wavfile import write
+from loguru import logger
 
 fs = 22050
 

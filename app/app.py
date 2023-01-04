@@ -10,6 +10,7 @@ from scipy.io.wavfile import write
 from pathlib import Path
 from flask import Flask, request
 import base64
+from loguru import logger
 
 fs = 22050
 
@@ -65,6 +66,7 @@ text2speech = get_text2speech()
 
 
 def run_tts(text: str):
+    logger.debug("text: {}", text)
     with torch.no_grad():
         c_mel = text2speech(text.lower())['feat_gen']
         wav = vocoder.inference(c_mel)

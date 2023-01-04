@@ -43,3 +43,5 @@ WORKDIR /app
 
 COPY entrypoint.sh ./
 ENTRYPOINT ["./entrypoint.sh"]
+RUN source activate espnet &&\
+    pip install loguru

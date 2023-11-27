@@ -10,6 +10,8 @@ from parallel_wavegan.utils import load_model
 from scipy.io.wavfile import write
 from loguru import logger
 
+from app.utils import resolve_num2words
+
 fs = 22050
 
 # model_name = os.environ['TTS_MODEL_NAME']
@@ -86,6 +88,7 @@ app = Flask(__name__)
 @app.route('/data', methods=['GET', 'POST'])
 def mydata():
     text = request.args.get('sentence').lower()
+    text = resolve_num2words(text)
     return run_tts(text)
 
 

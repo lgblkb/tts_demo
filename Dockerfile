@@ -15,7 +15,8 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 RUN echo "source activate espnet" > ~/.bashrc &&\
     source activate espnet &&\
-    pip install parallel_wavegan==0.5.5 flask gunicorn jiwer loguru
+    pip install parallel_wavegan==0.5.5 flask gunicorn jiwer loguru \
+    num2words
 
 ARG BASE_URL
 ARG MODEL_FILENAME
